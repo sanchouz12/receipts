@@ -2,8 +2,8 @@ from datetime import datetime
 from decimal import Decimal
 from enum import StrEnum
 
-from sqlalchemy import JSON, DateTime, Enum, ForeignKey, Identity, Numeric, String, text
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import JSON, DateTime, Enum, ForeignKey, Identity, Numeric, String, UniqueConstraint, text
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 class Base(DeclarativeBase):
@@ -20,11 +20,14 @@ PaymentTypeEnum = Enum(PaymentType, name="payment_types", values_callable=lambda
 
 class User(Base):
     __tablename__ = "users"
+    __table_args__ = (UniqueConstraint("name", "email", name="name_and_email_uc"),)
 
     id: Mapped[int] = mapped_column(Identity(always=True), primary_key=True)
-    name: Mapped[str] = mapped_column(String(100), unique=True)
-    email: Mapped[str] = mapped_column(String(100), unique=True)
+    name: Mapped[str] = mapped_column(String(100))
+    email: Mapped[str] = mapped_column(String(100))
     password: Mapped[str] = mapped_column(String)
+
+    receipts: Mapped[list["Receipt"]] = relationship(back_populates="user")
 
     def __init__(self, name: str, email: str, password: str):
         super().__init__()
@@ -43,6 +46,8 @@ class Receipt(Base):
     payment_type: Mapped[PaymentType] = mapped_column(PaymentTypeEnum)
     payment_amount: Mapped[Decimal] = mapped_column(Numeric(8, 2))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP"))
+
+    user: Mapped["User"] = relationship(back_populates="receipts", cascade="all, delete-orphan")
 
     def __init__(
         self,
