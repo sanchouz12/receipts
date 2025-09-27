@@ -3,6 +3,7 @@ name = "olearis-test"
 version = "0.1.0"
 requires-python = ">=3.13.4"
 dependencies = [
+    "alembic>=1.16.5",
     "bcrypt>=4.3.0",
     "fastapi[standard]>=0.117.1",
     "psycopg[binary]>=3.2.10",
