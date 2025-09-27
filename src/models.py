@@ -26,6 +26,12 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(100), unique=True)
     password: Mapped[str] = mapped_column(String)
 
+    def __init__(self, name: str, email: str, password: str):
+        super().__init__()
+        self.name = name
+        self.email = email
+        self.password = password
+
 
 class Receipt(Base):
     __tablename__ = "receipts"
@@ -37,3 +43,21 @@ class Receipt(Base):
     payment_type: Mapped[PaymentType] = mapped_column(PaymentTypeEnum)
     payment_amount: Mapped[Decimal] = mapped_column(Numeric(8, 2))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP"))
+
+    def __init__(
+        self,
+        user_id: int,
+        products: dict,
+        total_cost: Decimal,
+        payment_type: PaymentType,
+        payment_amount: Decimal,
+        created_at: datetime | None = None,
+    ) -> None:
+        super().__init__()
+        self.user_id = user_id
+        self.products = products
+        self.total_cost = total_cost
+        self.payment_type = payment_type
+        self.payment_amount = payment_amount
+        if created_at:
+            self.created_at = created_at
