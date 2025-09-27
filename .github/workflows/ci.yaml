@@ -1,0 +1,23 @@
+name: CI workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Install dependencies
+        run: uv sync --group ci --no-group dev
+      - name: Run linting
+        run: uv run ruff check
+      - name: Run type checking
+        run: uv run pyright
