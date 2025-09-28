@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 from fastapi.testclient import TestClient
+from pydantic_settings import SettingsConfigDict
 from sqlalchemy import create_engine, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session, sessionmaker
@@ -16,14 +17,15 @@ from src.utils.auth import get_password_hash
 from tests.utils.helpers import create_auth_headers
 
 
+class TestConfig(Config):
+    model_config = SettingsConfigDict(
+        env_file=".env.test", env_ignore_empty=True, env_file_encoding="utf-8", extra="ignore"
+    )
+
+
 @pytest.fixture(scope="session")
 def test_config() -> Config:
-    return Config(
-        ENVIRONMENT="test",
-        POSTGRES_DB="test_receipts_db",
-        JWT_SECRET_KEY="test-secret-key-for-testing-only",
-        JWT_ALGORITHM="HS256",
-    )
+    return TestConfig()
 
 
 @pytest.fixture(scope="session", autouse=True)

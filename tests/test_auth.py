@@ -32,14 +32,14 @@ class TestAuthRegister:
 
         response = client.post("/auth/register", json=new_user_data.model_dump())
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     def test_register_missing_fields(self, client: TestClient):
         user_data = {"email": "test@example.com"}
 
         response = client.post("/auth/register", json=user_data)
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 class TestAuthLogin:
@@ -72,7 +72,7 @@ class TestAuthLogin:
     def test_login_missing_credentials(self, client: TestClient):
         response = client.post("/auth/token", data={})
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 class TestAuthMe:

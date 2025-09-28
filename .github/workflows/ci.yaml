@@ -8,7 +8,18 @@ on:
   workflow_dispatch:
 
 jobs:
-  ci:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/setup
+        with:
+          dependency-groups: '--group ci'
+      - name: Run linting
+        run: uv run ruff check
+      - name: Run type checking
+        run: uv run pyright
+
+  test:
     runs-on: ubuntu-latest
     
     services:
@@ -26,18 +37,12 @@ jobs:
           - 5432:5432
     
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
-      - name: Install dependencies
-        run: uv sync --group ci --group tests --no-group dev
-      - name: Run linting
-        run: uv run ruff check
-      - name: Run type checking
-        run: uv run pyright
+      - uses: ./.github/actions/setup
+        with:
+          dependency-groups: '--group tests'
+      - name: Load test environment
+        uses: cardinalby/export-env-action@v2
+        with:
+          envFile: '.env.test'
       - name: Run tests
         run: uv run pytest
-        env:
-          POSTGRES_PASSWORD: password
-          POSTGRES_HOST: localhost
-          POSTGRES_USER: postgres
-          POSTGRES_DB: test_receipts_db
