@@ -48,12 +48,13 @@ def test_db(test_config: Config) -> Generator[Session]:
     test_session = sessionmaker(bind=engine)
 
     with test_session() as session:
-        transaction = session.begin()
+        session.begin()
         try:
             yield session
         finally:
-            if transaction.is_active:
-                transaction.rollback()
+            session.rollback()
+            session.execute(text("TRUNCATE TABLE receipts, users RESTART IDENTITY CASCADE"))
+            session.commit()
 
 
 @pytest.fixture
@@ -63,9 +64,11 @@ def client(test_db: Session) -> Generator[TestClient]:
 
         mock_session.scalar = AsyncMock(side_effect=lambda query: test_db.scalar(query))
         mock_session.execute = AsyncMock(side_effect=lambda query: test_db.execute(query))
+        mock_session.scalars = AsyncMock(side_effect=lambda query: test_db.scalars(query))
         mock_session.get = AsyncMock(side_effect=lambda model, id_: test_db.get(model, id_))
         mock_session.add = test_db.add
-        mock_session.commit = AsyncMock(side_effect=lambda: test_db.flush())
+        mock_session.commit = AsyncMock(side_effect=lambda: test_db.commit())
+        mock_session.refresh = AsyncMock(side_effect=lambda obj: test_db.refresh(obj))
 
         yield mock_session
 
