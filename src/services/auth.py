@@ -3,9 +3,21 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models import User
-from src.schemas.auth import TokenResponse
-from src.utils.auth import verify_password
+from src.schemas.auth import TokenResponse, UserRegisterData
+from src.utils.auth import get_password_hash, verify_password
 from src.utils.tokens import create_access_token
+
+
+async def register_user(db: AsyncSession, user_data: UserRegisterData) -> None:
+    existing_user = await db.scalar(select(User).where(User.email == user_data.email))
+    if existing_user:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User with this email already exists")
+
+    hashed_password = get_password_hash(user_data.password)
+
+    new_user = User(name=user_data.name, email=user_data.email, password=hashed_password)
+    db.add(new_user)
+    await db.commit()
 
 
 async def login_user(db: AsyncSession, login: str, password: str) -> TokenResponse:

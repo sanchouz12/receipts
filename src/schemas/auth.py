@@ -1,6 +1,17 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field
+
+
+class UserRegisterData(BaseModel):
+    name: str = Field(description="User name")
+    email: EmailStr = Field(description="User email")
+    password: str = Field(description="User password")
+
+
+class UserInfo(BaseModel):
+    name: str = Field(description="User name")
+    email: EmailStr = Field(description="User email")
 
 
 class JWTPayload(BaseModel):
