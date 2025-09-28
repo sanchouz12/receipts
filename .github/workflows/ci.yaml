@@ -11,6 +11,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
         with:
           dependency-groups: '--group ci'
@@ -37,6 +38,7 @@ jobs:
           - 5432:5432
     
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
         with:
           dependency-groups: '--group tests'
