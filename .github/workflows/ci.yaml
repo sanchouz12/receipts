@@ -13,8 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-        with:
-          dependency-groups: '--group ci'
       - name: Run linting
         run: uv run ruff check
       - name: Run type checking
@@ -40,8 +38,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
-        with:
-          dependency-groups: '--group tests'
       - name: Load test environment
         uses: cardinalby/export-env-action@v2
         with:
