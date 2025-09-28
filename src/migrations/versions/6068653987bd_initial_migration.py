@@ -38,7 +38,9 @@ def upgrade() -> None:
         sa.Column("total_cost", sa.Numeric(precision=8, scale=2), nullable=False),
         sa.Column("payment_type", sa.Enum("cash", "card", name="payment_types"), nullable=False),
         sa.Column("payment_amount", sa.Numeric(precision=8, scale=2), nullable=False),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("CURRENT_TIMESTAMP"), nullable=False),
+        sa.Column(
+            "created_at", sa.DateTime(timezone=True), server_default=sa.text("CURRENT_TIMESTAMP"), nullable=False
+        ),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
     )
