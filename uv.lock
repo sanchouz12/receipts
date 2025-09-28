@@ -817,6 +817,8 @@ ci = [
 ]
 dev = [
     { name = "pre-commit" },
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
 ]
 tests = [
     { name = "pytest" },
@@ -839,7 +841,11 @@ ci = [
     { name = "pyright", specifier = ">=1.1.405" },
     { name = "ruff", specifier = ">=0.13.1" },
 ]
-dev = [{ name = "pre-commit", specifier = ">=4.3.0" }]
+dev = [
+    { name = "pre-commit", specifier = ">=4.3.0" },
+    { name = "pytest", specifier = ">=8.4.2" },
+    { name = "pytest-asyncio", specifier = ">=1.2.0" },
+]
 tests = [
     { name = "pytest", specifier = ">=8.4.2" },
     { name = "pytest-asyncio", specifier = ">=1.2.0" },
