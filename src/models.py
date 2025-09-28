@@ -24,7 +24,7 @@ class User(Base):
 
     id: Mapped[int] = mapped_column(Identity(always=True), primary_key=True)
     name: Mapped[str] = mapped_column(String(100))
-    email: Mapped[str] = mapped_column(String(100))
+    email: Mapped[str] = mapped_column(String(100), unique=True)
     password: Mapped[str] = mapped_column(String)
 
     receipts: Mapped[list["Receipt"]] = relationship(back_populates="user")
@@ -47,7 +47,7 @@ class Receipt(Base):
     payment_amount: Mapped[Decimal] = mapped_column(Numeric(8, 2))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP"))
 
-    user: Mapped["User"] = relationship(back_populates="receipts", cascade="all, delete-orphan")
+    user: Mapped["User"] = relationship(back_populates="receipts", cascade="all")
 
     def __init__(
         self,

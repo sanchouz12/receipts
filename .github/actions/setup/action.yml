@@ -1,0 +1,9 @@
+name: 'Setup Python and Dependencies'
+description: 'Common setup for CI jobs'
+runs:
+  using: 'composite'
+  steps:
+    - uses: astral-sh/setup-uv@v6
+    - name: Install dependencies
+      run: uv sync --group ci --group tests
+      shell: bash

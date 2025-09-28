@@ -2,22 +2,45 @@ name: CI workflow
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 jobs:
-  ci:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
-      - name: Install dependencies
-        run: uv sync --group ci --no-group dev
+      - uses: ./.github/actions/setup
       - name: Run linting
         run: uv run ruff check
       - name: Run type checking
         run: uv run pyright
+
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: test_receipts_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - name: Load test environment
+        uses: cardinalby/export-env-action@v2
+        with:
+          envFile: '.env.test'
+      - name: Run tests
+        run: uv run pytest
